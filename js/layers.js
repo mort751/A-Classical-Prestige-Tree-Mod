@@ -55,7 +55,7 @@ addLayer("f", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
-        active: false
+        activeTime: new Decimal(0)
     }},
     branches: ["p"],
     color: "#dc8213",
@@ -81,9 +81,28 @@ addLayer("f", {
         let speed = new Decimal(2)
         return speed
     },
+    update(diff) {
+        if(player[this.layer].activeTime.gt(0)) player[this.layer].activeTime = player[this.layer].activeTime.sub(diff)
+    },
+    timeMult() {
+       let base = new Decimal(60) 
+
+       let mult = new Decimal(1)
+       mult.mul(player[this.layer].points.add(2).log(2))
+
+       return base.mul(mult)
+    },
     clickables: {
     11: {
-        display() {return "Blah"},
+        display() {
+            if(player[this.layer].activeTime.gt(0)) return "Time is currently being sped up by " + format(tmp[this.layer].effect) + " for " + format(player[this.layer].activeTime) + " seconds"
+            else return "Speed up time by " + format(tmp[this.layer].effect) + " for " + format(tmp[this.layer].timeMult) + " seconds " + timeFormat(65)
+        },
+        canClick() {return player[this.layer].activeTime.lt(1) && player[this.layer].points.gt(0)},
+        onClick() {
+            player[this.layer].activeTime = tmp[this.layer].timeMult
+            player[this.layer].points = new Decimal(0)
+        }
     }
     },
     upgrades: {
