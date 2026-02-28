@@ -84,22 +84,24 @@ addLayer("f", {
     update(diff) {
         if(player[this.layer].activeTime.gt(0)) player[this.layer].activeTime = player[this.layer].activeTime.sub(diff)
     },
-    timeMult() {
+    effectTime() {return tmp[this.layer].timeBase.mul(tmp[this.layer].timeMult.pow(player[this.layer].points))}, 
+    timeBase() {
        let base = new Decimal(60) 
-
-       let mult = new Decimal(1)
-
-       return base.mul(mult)
+       return base
+    },
+    timeMultBase() {
+        let base = new Decimal(1.1)
+        return base
     },
     clickables: { 
     11: {
         display() {
-            if(player[this.layer].activeTime.gt(0)) return "Time is currently being sped up by " + format(tmp[this.layer].effect) + " for " + formatTime(player[this.layer].activeTime) + " seconds"
-            else return "Speed up time by " + format(tmp[this.layer].effect) + " for " + formatTime(tmp[this.layer].timeMult) + " seconds "
+            if(player[this.layer].activeTime.gt(0)) return "Speeding up time by " + format(tmp[this.layer].effect) + "x for " + formatTime(player[this.layer].activeTime) + " seconds"
+            else return "Speed up time by " + format(tmp[this.layer].effect) + "x for " + formatTime(tmp[this.layer].effectTime) + " seconds "
         },
         canClick() {return player[this.layer].activeTime.lt(1) && player[this.layer].points.gt(0)},
         onClick() {
-            player[this.layer].activeTime = tmp[this.layer].timeMult
+            player[this.layer].activeTime = tmp[this.layer].effectTime
             player[this.layer].points = new Decimal(0)
         }
     }
