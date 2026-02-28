@@ -24,7 +24,7 @@ addLayer("p", {
     hotkeys: [
         {key: "p", description: "P: Reset for prestige points.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown(){return true},
+    layerShown() {return true},
     upgrades: {
     11: {
         title: "The Start",
@@ -55,6 +55,7 @@ addLayer("f", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
+        active: false
     }},
     branches: ["p"],
     color: "#dc8213",
@@ -75,7 +76,16 @@ addLayer("f", {
     hotkeys: [
         {key: "f", description: "F: Reset for time flux.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown(){return player.p.unlocked || player[this.layer].unlocked},
+    layerShown() {return hasUpgrade('p', 11) || player[this.layer].unlocked},
+    effect() {
+        let speed = new Decimal(2)
+        return speed
+    },
+    clickables: {
+    11: {
+        display() {return "Blah"},
+    }
+    },
     upgrades: {
     }
 })
