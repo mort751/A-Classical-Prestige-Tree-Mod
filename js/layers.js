@@ -78,8 +78,8 @@ addLayer("f", {
     ],
     layerShown() {return hasUpgrade('p', 11) || player[this.layer].unlocked},
     effect() {
-        let speed = new Decimal(2)
-        return speed
+        let effect = new Decimal(2)
+        return effect
     },
     update(diff) {
         if(player[this.layer].activeTime.gt(0)) player[this.layer].activeTime = player[this.layer].activeTime.sub(diff)
@@ -88,15 +88,14 @@ addLayer("f", {
        let base = new Decimal(60) 
 
        let mult = new Decimal(1)
-       mult.mul(player[this.layer].points.add(2).log(2))
 
        return base.mul(mult)
     },
-    clickables: {
+    clickables: { 
     11: {
         display() {
-            if(player[this.layer].activeTime.gt(0)) return "Time is currently being sped up by " + format(tmp[this.layer].effect) + " for " + format(player[this.layer].activeTime) + " seconds"
-            else return "Speed up time by " + format(tmp[this.layer].effect) + " for " + format(tmp[this.layer].timeMult) + " seconds " + formatTime(65)
+            if(player[this.layer].activeTime.gt(0)) return "Time is currently being sped up by " + format(tmp[this.layer].effect) + " for " + formatTime(player[this.layer].activeTime) + " seconds"
+            else return "Speed up time by " + format(tmp[this.layer].effect) + " for " + formatTime(tmp[this.layer].timeMult) + " seconds "
         },
         canClick() {return player[this.layer].activeTime.lt(1) && player[this.layer].points.gt(0)},
         onClick() {
