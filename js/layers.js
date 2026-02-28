@@ -96,7 +96,7 @@ addLayer("f", {
     11: {
         display() {
             if(player[this.layer].activeTime.gt(0)) return "Time is currently being sped up by " + format(tmp[this.layer].effect) + " for " + format(player[this.layer].activeTime) + " seconds"
-            else return "Speed up time by " + format(tmp[this.layer].effect) + " for " + format(tmp[this.layer].timeMult) + " seconds " + timeFormat(65)
+            else return "Speed up time by " + format(tmp[this.layer].effect) + " for " + format(tmp[this.layer].timeMult) + " seconds " + formatTime(65)
         },
         canClick() {return player[this.layer].activeTime.lt(1) && player[this.layer].points.gt(0)},
         onClick() {
