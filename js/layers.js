@@ -56,6 +56,7 @@ addLayer("f", {
         unlocked: false,
 		points: new Decimal(0),
     }},
+    branches: ["p"],
     color: "#dc8213",
     requires: new Decimal(100), // Can be a function that takes requirement increases into account
     resource: "time flux", // Name of prestige currency
