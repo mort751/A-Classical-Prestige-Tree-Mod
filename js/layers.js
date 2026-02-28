@@ -58,6 +58,7 @@ addLayer("f", {
         activeTime: new Decimal(0)
     }},
     branches: ["p"],
+    tooltip() {return player[this.layer].points + "time flux"},
     color: "#dc8213",
     requires: new Decimal(100), // Can be a function that takes requirement increases into account
     resource: "time flux", // Name of prestige currency
@@ -87,7 +88,13 @@ addLayer("f", {
     update(diff) {
         if(player[this.layer].activeTime.gt(0)) player[this.layer].activeTime = player[this.layer].activeTime.sub(diff)
     },
-    effectTime() {return new Decimal(30)}, 
+    effectTime() {
+        let base = new Decimal(30)
+
+        let mult = new Decimal(1)
+
+        return base.mul(player[this.layer].points.sqrt()).mul(mult)
+    }, 
     clickables: { 
     11: {
         display() {
