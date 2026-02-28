@@ -77,6 +77,9 @@ addLayer("f", {
         {key: "f", description: "F: Reset for time flux.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown() {return hasUpgrade('p', 11) || player[this.layer].unlocked},
+    onPrestige(gain) {
+        player[this.layer].activeTime = new Decimal(0)
+    },
     effect() {
         let effect = new Decimal(2)
         return effect
@@ -84,15 +87,7 @@ addLayer("f", {
     update(diff) {
         if(player[this.layer].activeTime.gt(0)) player[this.layer].activeTime = player[this.layer].activeTime.sub(diff)
     },
-    effectTime() {return tmp[this.layer].timeBase.mul(tmp[this.layer].timeMult.pow(player[this.layer].points))}, 
-    timeBase() {
-       let base = new Decimal(60) 
-       return base
-    },
-    timeMultBase() {
-        let base = new Decimal(1.1)
-        return base
-    },
+    effectTime() {return new Decimal(30)}, 
     clickables: { 
     11: {
         display() {
