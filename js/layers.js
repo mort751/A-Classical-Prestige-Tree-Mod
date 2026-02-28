@@ -7,7 +7,7 @@ addLayer("p", {
 		points: new Decimal(0),
     }},
     color: "#138cdc",
-    requires: new Decimal(10), // Can be a function that takes requirement increases into account
+    requires: new Decimal(5), // Can be a function that takes requirement increases into account
     resource: "prestige points", // Name of prestige currency
     baseResource: "points", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
@@ -22,13 +22,28 @@ addLayer("p", {
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "p", description: "P: Reset for prestige points.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
     upgrades: {
     11: {
-        description: "Blah",
-        cost: new Decimal(100),
+        title: "The Start",
+        description: "Start generating points.",
+        cost: new Decimal(1),
+    },
+    12: {
+        title: "Multiplier",
+        description: "Multiply point generation by 3.",
+        cost: new Decimal(2),
+        unlocked() { return hasUpgrade('p', 11) },
+    },
+    13: {
+        title: "Prestige Synergy",
+        description: "Boost point generation based on prestige points.",
+        cost: new Decimal(5),
+        unlocked() { return hasUpgrade('p', 12) },
+        effect() { return player.p.points.add(1).sqrt().add(1) },
+        effectDisplay() { return format(this.effect()) + "x" }
     },
     }
 })
