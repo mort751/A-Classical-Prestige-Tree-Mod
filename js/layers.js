@@ -28,7 +28,7 @@ addLayer("p", {
     layerShown() { return true },
     effect() { 
         let mult = new Decimal(1)
-        if(hasUpgrade(this.layer, 14)) mult.mul(2)
+        if(hasUpgrade(this.layer, 14)) mult = mult.mul(2)
         return player.p.points.add(1).cbrt().mul(mult) 
     },
     effectDescription() { return "which are currently multiplying point genration by " + format(tmp[this.layer].effect) + "x"},
@@ -79,7 +79,7 @@ addLayer("f", {
     branches: ["p"],
     tooltip() {return player[this.layer].points + " time flux" + (player[this.layer].activeTime.gt(0) ? ", " + formatTime(player[this.layer].activeTime) + " remaining" : "") },
     color: "#dc8213",
-    requires: new Decimal(100), // Can be a function that takes requirement increases into account
+    requires: new Decimal(200), // Can be a function that takes requirement increases into account
     resource: "time flux", // Name of prestige currency
     baseResource: "points", // Name of resource prestige is based on
     baseAmount() { return player.points }, // Get the current amount of baseResource
@@ -113,7 +113,7 @@ addLayer("f", {
     },
     effect() {
         let effect = new Decimal(2)
-        if(hasUpgrade(this.layer, 12)) effect.mul(1.25)
+        if(hasUpgrade(this.layer, 12)) effect = effect.mul(1.25)
         return effect
     },
     update(diff) {
@@ -121,7 +121,7 @@ addLayer("f", {
     },
     effectTime() {
         let base = new Decimal(60)
-        if(hasUpgrade(this.layer, 11)) base.mul(1.25)
+        if(hasUpgrade(this.layer, 11)) base = base.mul(1.25)
 
         let mult = new Decimal(1)
 
