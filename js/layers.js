@@ -53,13 +53,13 @@ addLayer("p", {
     14: {
         title: "Prestige Power",
         description: "Double the prestige point effect.",
-        cost: new Decimal(10),
+        cost: new Decimal(15),
         unlocked() { return hasUpgrade(this.layer, 13) },
     },
     21: {
         title: "Point Duplication",
         description: "Boost point generation based on points.",
-        cost: new Decimal(15),
+        cost: new Decimal(50),
         unlocked() { return player.f.unlocked },
         effect() { return player.points.add(2).log(2).cbrt() },
         effectDisplay() { return format(this.effect()) + "x" }
@@ -77,14 +77,14 @@ addLayer("f", {
         activeTime: new Decimal(0)
     }},
     branches: ["p"],
-    tooltip() {return player[this.layer].points + " time flux" + (player[this.layer].activeTime.gt(0) ? ", " + formatTime(player[this.layer].activeTime) + " seconds remaining" : "") },
+    tooltip() {return player[this.layer].points + " time flux" + (player[this.layer].activeTime.gt(0) ? ", " + formatTime(player[this.layer].activeTime) + " remaining" : "") },
     color: "#dc8213",
     requires: new Decimal(100), // Can be a function that takes requirement increases into account
     resource: "time flux", // Name of prestige currency
     baseResource: "points", // Name of resource prestige is based on
     baseAmount() { return player.points }, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.25, // Prestige currency exponent
+    exponent: 0.5, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         return mult
@@ -113,23 +113,25 @@ addLayer("f", {
     },
     effect() {
         let effect = new Decimal(2)
+        if(hasUpgrade(this.layer, 12)) effect.mul(1.25)
         return effect
     },
     update(diff) {
         if(player[this.layer].activeTime.gt(0)) player[this.layer].activeTime = player[this.layer].activeTime.sub(diff)
     },
     effectTime() {
-        let base = new Decimal(30)
+        let base = new Decimal(60)
+        if(hasUpgrade(this.layer, 11)) base.mul(1.25)
 
         let mult = new Decimal(1)
 
-        return base.mul(player[this.layer].points.sqrt()).mul(mult)
+        return base.mul(player[this.layer].points.sqrt().add(1)).mul(mult)
     }, 
     clickables: { 
     11: {
         display() {
-            if(player[this.layer].activeTime.gt(0)) return "Speeding up time by " + format(tmp[this.layer].effect) + "x for " + formatTime(player[this.layer].activeTime) + " seconds"
-            else return "Speed up time by " + format(tmp[this.layer].effect) + "x for " + formatTime(tmp[this.layer].effectTime) + " seconds "
+            if(player[this.layer].activeTime.gt(0)) return "Speeding up time by " + format(tmp[this.layer].effect) + "x for " + formatTime(player[this.layer].activeTime)
+            else return "Speed up time by " + format(tmp[this.layer].effect) + "x for " + formatTime(tmp[this.layer].effectTime)
         },
         canClick() {return player[this.layer].activeTime.lt(1) && player[this.layer].points.gt(0)},
         onClick() {
@@ -150,5 +152,19 @@ addLayer("f", {
         effectDescription: "Re-activating the time flux effect adds to the duration instead of setting it.",
         done() { return player[this.layer].points.gte(50) }
     },
-    }
+    },
+    upgrades: {
+    11: {
+        title: "Longer Effect",
+        description: "Increase the duration of the time flux effect by 25%.",
+        cost: new Decimal(1),
+        unlocked() { return player[this.layer].total.gt(1) }
+    },
+    12: {
+        title: "Stronger Effect",
+        description: "Increase the power of the time flux effect by 25%.",
+        cost: new Decimal(1),
+        unlocked() { return player[this.layer].total.gt(1) }
+    },
+    },
 })
