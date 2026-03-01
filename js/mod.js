@@ -1,8 +1,9 @@
 let modInfo = {
-	name: "A Classical Prestige Tree Mod",
+	name: "Another Prestige Tree Mod",
 	author: "nobody",
 	pointsName: "points",
 	modFiles: ["layers.js", "tree.js"],
+	id: "not classical",
 
 	discordName: "",
 	discordLink: "",

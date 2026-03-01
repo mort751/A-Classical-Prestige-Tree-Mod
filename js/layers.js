@@ -48,20 +48,20 @@ addLayer("p", {
         title: "More Prestige Power",
         description: "Increase the prestige point effect by 75%.",
         cost: new Decimal(5),
-        unlocked() { return hasUpgrade(this.layer, 13) },
+        unlocked() { return hasUpgrade(this.layer, 12) },
     },
     14: {
         title: "Double Prestige Points",
         description: "Multiply prestige point gain by 2.",
         cost: new Decimal(25),
-        unlocked() { return hasUpgrade(this.layer, 12) },
+        unlocked() { return hasUpgrade(this.layer, 13) },
     },
     21: {
         title: "Point Duplication",
         description: "Boost point generation based on points.",
         cost: new Decimal(50),
         unlocked() { return player.f.unlocked },
-        effect() { return player.points.add(2).log(2).cbrt() },
+        effect() { return player.points.add(3).log(3).cbrt() },
         effectDisplay() { return format(this.effect()) + "x" }
     },
     }
@@ -121,7 +121,7 @@ addLayer("f", {
     },
     effectTime() {
         let base = new Decimal(60)
-        if(hasUpgrade(this.layer, 11)) base = base.mul(1.25)
+        if(hasUpgrade(this.layer, 11)) base = base.mul(2)
 
         let mult = new Decimal(1)
 
@@ -156,7 +156,7 @@ addLayer("f", {
     upgrades: {
     11: {
         title: "Longer Effect",
-        description: "Increase the duration of the time flux effect by 25%.",
+        description: "Double the duration of the time flux effect.",
         cost: new Decimal(1),
         unlocked() { return player[this.layer].total.gt(1) }
     },
