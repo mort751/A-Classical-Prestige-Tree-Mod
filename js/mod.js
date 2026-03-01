@@ -44,6 +44,7 @@ function getPointGen() {
 	let gain = new Decimal(1)
 	if(hasUpgrade('p', 12)) gain = gain.mul(3)
 	if(hasUpgrade('p', 13)) gain = gain.mul(upgradeEffect('p', 13))
+	if(hasUpgrade('p', 31)) gain = gain.mul(upgradeEffect('p', 31))
 	if(player.f.unlocked && player.f.activeTime.gt(0)) gain = gain.mul(tmp.f.effect)
 	return gain
 }
