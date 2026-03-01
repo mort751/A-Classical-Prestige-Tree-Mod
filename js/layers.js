@@ -15,6 +15,7 @@ addLayer("p", {
     exponent: 0.5, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
+        if(hasUpgrade(this.layer, 21)) mult = mult.mul(2)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -43,6 +44,20 @@ addLayer("p", {
         cost: new Decimal(5),
         unlocked() { return hasUpgrade('p', 12) },
         effect() { return player.p.points.add(1).sqrt().add(1) },
+        effectDisplay() { return format(this.effect()) + "x" }
+    },
+    21: {
+        title: "Prestige Boost",
+        description: "Multiply presige point gain by 2.",
+        cost: new Decimal(2),
+        unlocked() { return player.f.unlocked && (~hasUpgrade(this.layer, 31))},
+    },
+    31: {
+        title: "Point Self Synergy",
+        description: "Boost point generation based on points.",
+        cost: new Decimal(2),
+        unlocked() { return player.f.unlocked && (~hasUpgrade(this.layer, 21))},
+        effect() { return player.points.add(2).log(2).pow(Decimal.div(1, 3.5)) },
         effectDisplay() { return format(this.effect()) + "x" }
     },
     }
@@ -78,8 +93,19 @@ addLayer("f", {
         {key: "f", description: "F: Reset for time flux.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown() {return hasUpgrade('p', 11) || player[this.layer].unlocked},
+    tabFormat: [
+    "main-display",
+    "prestige-button",
+    "resource-display",
+    ["clickable", 11],
+    "blank",
+    "milestones",
+    "blank",
+    "blank",
+    "upgrades"
+    ],
     onPrestige(gain) {
-        player[this.layer].activeTime = new Decimal(0)
+        if(~hasMilestone(this.layer, 1)) player[this.layer].activeTime = new Decimal(0)
     },
     effect() {
         let effect = new Decimal(2)
@@ -103,11 +129,22 @@ addLayer("f", {
         },
         canClick() {return player[this.layer].activeTime.lt(1) && player[this.layer].points.gt(0)},
         onClick() {
-            player[this.layer].activeTime = tmp[this.layer].effectTime
+            if(hasMilestone(this.layer, 2)) player[this.layer].activeTime = player[this.layer].activeTime.add(tmp[this.layer].effectTime)
+            else player[this.layer].activeTime = tmp[this.layer].effectTime
             player[this.layer].points = new Decimal(0)
         }
     }
     },
-    upgrades: {
+    milestones: {
+    1: {
+        requirementDescription: "25 flux points",
+        effectDescription: "Flux resets no longer reset time flux.",
+        done() { return player[this.layer].points.gte(25) }
+    },
+    2: {
+        requirementDescription: "50 flux points",
+        effectDescription: "Re-activating the time flux effect adds to the duration instead of setting it.",
+        done() { return player[this.layer].points.gte(50) }
+    },
     }
 })
