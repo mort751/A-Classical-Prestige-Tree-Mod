@@ -10,7 +10,7 @@ addLayer("p", {
     requires: new Decimal(5), // Can be a function that takes requirement increases into account
     resource: "prestige points", // Name of prestige currency
     baseResource: "points", // Name of resource prestige is based on
-    baseAmount() {return player.points}, // Get the current amount of baseResource
+    baseAmount() { return player.points }, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.5, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
@@ -48,15 +48,15 @@ addLayer("p", {
     },
     21: {
         title: "Prestige Boost",
-        description: "Multiply presige point gain by 2.",
-        cost: new Decimal(2),
-        unlocked() { return player.f.unlocked && (~hasUpgrade(this.layer, 31))},
+        description: "Multiply prestige point gain by 2.",
+        cost: new Decimal(5),
+        unlocked() { return player.f.unlocked },
     },
-    31: {
+    22: {
         title: "Point Self Synergy",
         description: "Boost point generation based on points.",
-        cost: new Decimal(2),
-        unlocked() { return player.f.unlocked && (~hasUpgrade(this.layer, 21))},
+        cost: new Decimal(5),
+        unlocked() { return hasUpgrade('p', 21) },
         effect() { return player.points.add(2).log(2).pow(Decimal.div(1, 3.5)) },
         effectDisplay() { return format(this.effect()) + "x" }
     },
@@ -78,7 +78,7 @@ addLayer("f", {
     requires: new Decimal(100), // Can be a function that takes requirement increases into account
     resource: "time flux", // Name of prestige currency
     baseResource: "points", // Name of resource prestige is based on
-    baseAmount() {return player.points}, // Get the current amount of baseResource
+    baseAmount() { return player.points }, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.25, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
@@ -92,7 +92,7 @@ addLayer("f", {
     hotkeys: [
         {key: "f", description: "F: Reset for time flux.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown() {return hasUpgrade('p', 11) || player[this.layer].unlocked},
+    layerShown() { return hasUpgrade('p', 11) || player[this.layer].unlocked },
     tabFormat: [
     "main-display",
     "prestige-button",
