@@ -108,7 +108,7 @@ addLayer("f", {
     hotkeys: [
         {key: "f", description: "F: Reset for time flux.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown() { return hasUpgrade('p', 11) || player[this.layer].unlocked },
+    layerShown() { return hasUpgrade('p', 11) || player[this.layer].unlocked || player.m.unlocked },
     tabFormat: [
     "main-display",
     "prestige-button",
@@ -194,17 +194,23 @@ addLayer("m", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
+        total: new Decimal(0)
     }},
     branches: ["p"],
-    color: "#0b760d",
+    color: "#0c9b0e",
     requires: new Decimal(200), // Can be a function that takes requirement increases into account
     resource: "money", // Name of prestige currency
     baseResource: "points", // Name of resource prestige is based on
     baseAmount() { return player.points }, // Get the current amount of baseResource
     type: "custom", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: Decimal.div(1, 3), // Prestige currency exponent
-    getResetGain() { return new Decimal(1) },
-    getNextAt(canMax=false) { return new Decimal(200)},
+    getResetGain() { 
+        if(player[this.layer].total.lt(1)) return new Decimal(10)
+        else return new Decimal(0)
+    },
+    getNextAt(canMax=false) { return new Decimal(0) },
+    canReset() { return player.points.gte(200) && (player[this.layer].total.lt(1)) },
+    prestigeButtonText() { return player[this.layer].total.gt(0)? "Money has been unlocked!" : "Unlock Money" },
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         return mult
@@ -213,12 +219,44 @@ addLayer("m", {
         return new Decimal(1)
     },
     row: 1, // Row the layer is in on the tree (0 is the first row)
-    hotkeys: [
-        {key: "f", description: "F: Reset for time flux.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
-    ],
-    layerShown() { return hasUpgrade('p', 11) || player[this.layer].unlocked },
+    layerShown() { return hasUpgrade('p', 11) || player[this.layer].unlocked || player.f.unlocked },
+    update(diff) {
+        player.m.points = player.m.points.add(tmp[this.layer].generation.mul(diff))
+    },
+    generation() {
+        let gen = new Decimal(0)
+        gen = gen.add(buyableEffect(this.layer, 11))
+
+        if(player.f.unlocked && player.f.activeTime.gt(0)) gen = gen.mul(tmp.f.effect)
+        return gen
+    },
+    effectDescription() { return "you are generating " + format(tmp[this.layer].generation) + " money/sec" },
     tabFormat: [
     "main-display",
     "prestige-button",
+    "blank",
+    "clickables",
+    "blank",
+    "blank",
+    "buyables",
     ],
+
+    buyables: {
+    11: {
+        title: "Tier 1 Employee",
+        cost(x) { return new Decimal(10).mul(Decimal.pow(1.5, x)).floor() },
+        display() { return "Cost: " + format(this.cost()) + " money\nAmount: " + format(player[this.layer].buyables[this.id]) + "\nGenerates: " + format(this.base()) + " money/sec" + "\nTotal generation: " + format(this.effect()) + " money/sec"},
+        canAfford() { return player[this.layer].points.gte(this.cost()) },
+        buy() {
+            player[this.layer].points = player[this.layer].points.sub(this.cost())
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        },
+        effect(x) { return x.mul(this.base()) },
+        base() {
+            let base = new Decimal(1)
+            return base
+        },
+        style: { "font-size":"14px" } 
+    },
+    }
 })
