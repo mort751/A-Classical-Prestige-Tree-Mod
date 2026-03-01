@@ -15,7 +15,7 @@ addLayer("p", {
     exponent: 0.5, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
-        if(hasUpgrade(this.layer, 13)) mult = mult.mul(2)
+        if(hasUpgrade(this.layer, 14)) mult = mult.mul(2)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -28,7 +28,7 @@ addLayer("p", {
     layerShown() { return true },
     effect() { 
         let mult = new Decimal(1)
-        if(hasUpgrade(this.layer, 14)) mult = mult.mul(2)
+        if(hasUpgrade(this.layer, 13)) mult = mult.mul(1.75)
         return player.p.points.add(1).cbrt().mul(mult) 
     },
     effectDescription() { return "which are currently multiplying point genration by " + format(tmp[this.layer].effect) + "x"},
@@ -45,16 +45,16 @@ addLayer("p", {
         unlocked() { return hasUpgrade(this.layer, 11) },
     },
     13: {
-        title: "Double Prestige Points",
-        description: "Multiply prestige point gain by 2.",
+        title: "More Prestige Power",
+        description: "Increase the prestige point effect by 75%.",
         cost: new Decimal(5),
-        unlocked() { return hasUpgrade(this.layer, 12) },
+        unlocked() { return hasUpgrade(this.layer, 13) },
     },
     14: {
-        title: "Prestige Power",
-        description: "Double the prestige point effect.",
-        cost: new Decimal(15),
-        unlocked() { return hasUpgrade(this.layer, 13) },
+        title: "Double Prestige Points",
+        description: "Multiply prestige point gain by 2.",
+        cost: new Decimal(25),
+        unlocked() { return hasUpgrade(this.layer, 12) },
     },
     21: {
         title: "Point Duplication",
@@ -84,7 +84,7 @@ addLayer("f", {
     baseResource: "points", // Name of resource prestige is based on
     baseAmount() { return player.points }, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.5, // Prestige currency exponent
+    exponent: Decimal.div(1, 3), // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         return mult
@@ -125,7 +125,7 @@ addLayer("f", {
 
         let mult = new Decimal(1)
 
-        return base.mul(player[this.layer].points.sqrt().add(1)).mul(mult)
+        return base.mul(player[this.layer].points.cbrt().max(1)).mul(mult)
     }, 
     clickables: { 
     11: {
