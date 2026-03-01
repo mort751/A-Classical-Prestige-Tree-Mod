@@ -58,7 +58,7 @@ addLayer("f", {
         activeTime: new Decimal(0)
     }},
     branches: ["p"],
-    tooltip() {return player[this.layer].points + "time flux"},
+    tooltip() {return player[this.layer].points + " time flux" + (player[this.layer].activeTime.gt(0) ? ", " + formatTime(player[this.layer].activeTime) + " seconds remaining" : "") },
     color: "#dc8213",
     requires: new Decimal(100), // Can be a function that takes requirement increases into account
     resource: "time flux", // Name of prestige currency
