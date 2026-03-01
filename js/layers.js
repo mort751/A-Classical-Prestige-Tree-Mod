@@ -26,6 +26,12 @@ addLayer("p", {
         {key: "p", description: "P: Reset for prestige points.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown() { return true },
+    passiveGeneration() {
+        let passive = new Decimal(0)
+        if(hasUpgrade(this.layer, 22)) passive = passive.add(0.1)
+        if(player.f.unlocked && player.f.activeTime.gt(0)) passive = passive.mul(tmp.f.effect) 
+        return passive
+    },
     effect() { 
         let mult = new Decimal(1)
         if(hasUpgrade(this.layer, 13)) mult = mult.mul(1.75)
@@ -59,10 +65,16 @@ addLayer("p", {
     21: {
         title: "Point Duplication",
         description: "Boost point generation based on points.",
-        cost: new Decimal(50),
+        cost: new Decimal(200),
         unlocked() { return player.f.unlocked },
         effect() { return player.points.add(3).log(3).cbrt() },
         effectDisplay() { return format(this.effect()) + "x" }
+    },
+    22: {
+        title: "Prestige Point Automation",
+        description: "Generate 10% of current prestige point gain every second.",
+        cost: new Decimal(1000),
+        unlocked() { return hasUpgrade(this.layer, 21) },
     },
     }
 })
@@ -166,5 +178,47 @@ addLayer("f", {
         cost: new Decimal(1),
         unlocked() { return player[this.layer].total.gt(1) }
     },
+    13: {
+        title: "Time is Money",
+        description: "Increase the duration of the time flux effect based on how much money you have.",
+        cost: new Decimal(5),
+        unlocked() { return false }
     },
+    },
+})
+
+addLayer("m", {
+    name: "money", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "M", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    startData() { return {
+        unlocked: false,
+		points: new Decimal(0),
+    }},
+    branches: ["p"],
+    color: "#0b760d",
+    requires: new Decimal(200), // Can be a function that takes requirement increases into account
+    resource: "money", // Name of prestige currency
+    baseResource: "points", // Name of resource prestige is based on
+    baseAmount() { return player.points }, // Get the current amount of baseResource
+    type: "custom", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+    exponent: Decimal.div(1, 3), // Prestige currency exponent
+    getResetGain() { return new Decimal(1) },
+    getNextAt(canMax=false) { return new Decimal(200)},
+    gainMult() { // Calculate the multiplier for main currency from bonuses
+        mult = new Decimal(1)
+        return mult
+    },
+    gainExp() { // Calculate the exponent on main currency from bonuses
+        return new Decimal(1)
+    },
+    row: 1, // Row the layer is in on the tree (0 is the first row)
+    hotkeys: [
+        {key: "f", description: "F: Reset for time flux.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
+    layerShown() { return hasUpgrade('p', 11) || player[this.layer].unlocked },
+    tabFormat: [
+    "main-display",
+    "prestige-button",
+    ],
 })
