@@ -15,7 +15,7 @@ addLayer("p", {
     exponent: 0.5, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
-        if(hasUpgrade(this.layer, 21)) mult = mult.mul(2)
+        if(hasUpgrade(this.layer, 13)) mult = mult.mul(2)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -25,7 +25,13 @@ addLayer("p", {
     hotkeys: [
         {key: "p", description: "P: Reset for prestige points.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown() {return true},
+    layerShown() { return true },
+    effect() { 
+        let mult = new Decimal(1)
+        if(hasUpgrade(this.layer, 14)) mult.mul(2)
+        return player.p.points.add(1).cbrt().mul(mult) 
+    },
+    effectDescription() { return "which are currently multiplying point genration by " + format(tmp[this.layer].effect) + "x"},
     upgrades: {
     11: {
         title: "The Start",
@@ -33,31 +39,29 @@ addLayer("p", {
         cost: new Decimal(1),
     },
     12: {
-        title: "Multiplier",
+        title: "Triple Points",
         description: "Multiply point generation by 3.",
         cost: new Decimal(2),
-        unlocked() { return hasUpgrade('p', 11) },
+        unlocked() { return hasUpgrade(this.layer, 11) },
     },
     13: {
-        title: "Prestige Synergy",
-        description: "Boost point generation based on prestige points.",
-        cost: new Decimal(5),
-        unlocked() { return hasUpgrade('p', 12) },
-        effect() { return player.p.points.add(1).sqrt().add(1) },
-        effectDisplay() { return format(this.effect()) + "x" }
-    },
-    21: {
-        title: "Prestige Boost",
+        title: "Double Prestige Points",
         description: "Multiply prestige point gain by 2.",
         cost: new Decimal(5),
-        unlocked() { return player.f.unlocked },
+        unlocked() { return hasUpgrade(this.layer, 12) },
     },
-    22: {
-        title: "Point Self Synergy",
+    14: {
+        title: "Prestige Power",
+        description: "Double the prestige point effect.",
+        cost: new Decimal(10),
+        unlocked() { return hasUpgrade(this.layer, 13) },
+    },
+    21: {
+        title: "Point Duplication",
         description: "Boost point generation based on points.",
-        cost: new Decimal(5),
-        unlocked() { return hasUpgrade('p', 21) },
-        effect() { return player.points.add(2).log(2).pow(Decimal.div(1, 3.5)) },
+        cost: new Decimal(15),
+        unlocked() { return player.f.unlocked },
+        effect() { return player.points.add(2).log(2).cbrt() },
         effectDisplay() { return format(this.effect()) + "x" }
     },
     }
